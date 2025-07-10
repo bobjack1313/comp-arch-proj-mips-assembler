@@ -11,12 +11,12 @@
 
   Dependencies:
     - encoder.h
-    - helpers.h
+    - converters.h
     - <sstream>, <unordered_map>
   -----------------------------------------------------------------------------*/
 
 #include "encoder.h" 
-#include "helpers.h"
+#include "converters.h"
 
 #include <sstream> 
 #include <unordered_map>
