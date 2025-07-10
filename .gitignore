@@ -1,0 +1,29 @@
+# === C++ Build Files ===
+*.o
+*.obj
+*.exe
+*.out
+*.a
+*.so
+*.dll
+
+# === Editor & OS Files ===
+*~
+*.swp
+.DS_Store
+Thumbs.db
+
+# === Project-Specific ===
+output.txt
+test*.txt
+*.bin
+*.log
+*.dump
+
+# === VSCode / IDEs ===
+.vscode/
+.idea/
+*.code-workspace
+
+# === MSYS2 or Make artifacts ===
+Makefile.bak

@@ -61,7 +61,7 @@ make
 ```
 To manually compile use the following:
 ```
-g++ -std=c++17 -Wall -Wextra -pedantic tiny-mips-asm.cpp parser.cpp encoder.cpp converters.cpp -o tiny-mips-asm
+g++ -std=c++17 -Wall -Wextra -pedantic tiny_mips_asm.cpp parser.cpp encoder.cpp converters.cpp -o tiny_mips_asm
 ```
 ---
 
@@ -70,7 +70,7 @@ g++ -std=c++17 -Wall -Wextra -pedantic tiny-mips-asm.cpp parser.cpp encoder.cpp 
 Once compiled, run the assembler using:
 
 ```
-./tiny-mips-asm input.s output.txt
+./tiny_mips_asm input.s output.txt
 ```
 - `input.s`: MIPS assembly source file
 - `output.txt`: Destination file for 32-bit binary output

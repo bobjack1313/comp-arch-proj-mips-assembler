@@ -5,11 +5,11 @@ CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -pedantic
 
 # Source files 
-SRC = tiny-mips-asm.cpp parser.cpp encoder.cpp converters.cpp
-HDR = parser.h encoder.h converters.h tiny-mips-asm.h
+SRC = tiny_mips_asm.cpp parser.cpp encoder.cpp converters.cpp
+HDR = parser.h encoder.h converters.h tiny_mips_asm.h
 
 # Output binary  
-TARGET = tiny-mips-asm
+TARGET = tiny_mips_asm
 
 # Default rule  
 all: $(TARGET)
