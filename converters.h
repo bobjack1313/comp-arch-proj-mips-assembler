@@ -12,10 +12,12 @@
 
   Dependencies:
     - <string>
+    - <cstdint>
   -----------------------------------------------------------------------------*/
 
 #pragma once
 #include <string>
+#include <cstdint> 
 
 /**
  * Converts a register name into its numeric value. 

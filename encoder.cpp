@@ -12,7 +12,7 @@
   Dependencies:
     - encoder.h
     - converters.h
-    - <sstream>, <unordered_map>
+    - <sstream>, <unordered_map>, <cstdint>
   -----------------------------------------------------------------------------*/
 
 #include "encoder.h" 
@@ -20,6 +20,7 @@
 
 #include <sstream> 
 #include <unordered_map>
+#include <cstdint>
 
 using namespace std;
 

@@ -14,7 +14,7 @@
     - parser.h: for parsing instructions and building the symbol table
     - encoder.h: for translating parsed instructions into machine code
     - converters.h: for converting functions
-    - <fstream>, <iostream>, <vector>, <string>, <unordered_map> 
+    - <fstream>, <iostream>, <vector>, <string>, <unordered_map>, <cstdint>
   -----------------------------------------------------------------------------*/
 
 #include <iostream>
@@ -22,11 +22,14 @@
 #include <vector> 
 #include <string>
 #include <unordered_map>
+#include <cstdint>
 
 #include "parser.h"
 #include "encoder.h" 
 #include "converters.h"
 #include "tiny-mips-asm.h"  
+
+using namespace std;
 
 /**
  * Runs the assembler using an input and output file path.

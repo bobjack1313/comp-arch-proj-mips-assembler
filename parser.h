@@ -10,13 +10,14 @@
   Date:        July 2025
 
   Dependencies:
-    - <string>, <vector>, <unordered_map>
+    - <string>, <vector>, <unordered_map>, <cstdint>
   -----------------------------------------------------------------------------*/
 
 #pragma once
 #include <string>
 #include <vector>
 #include <unordered_map> 
+#include <cstdint> 
 
 // Represents a parsed instruction with its operation and operands
 struct Token {

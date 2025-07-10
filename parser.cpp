@@ -11,12 +11,13 @@
 
   Dependencies:
     - parser.h
-    - <sstream>, <algorithm>
+    - <sstream>, <algorithm>, <cstdint>
   -----------------------------------------------------------------------------*/
 
 #include "parser.h"
 #include <sstream>
 #include <algorithm>
+#include <cstdint>
 
 using namespace std;
 

@@ -11,13 +11,14 @@
 
   Dependencies:
     - parser.h -- for tokens
-    - <string>, <vector>, <unordered_map>
+    - <string>, <vector>, <unordered_map>, <cstdint>
   -----------------------------------------------------------------------------*/
 
 #pragma once
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <cstdint>  
 #include "parser.h" 
 
 /**
