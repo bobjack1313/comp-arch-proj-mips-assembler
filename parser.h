@@ -16,13 +16,13 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <unordered_map> 
 
 // Represents a parsed instruction with its operation and operands
 struct Token {
     // Operation (e.g., "add", "lw", "beq")
-    std::string op;
-    // Operands (e.g., "$t0", "$a1", "label")
+    std::string op; 
+    // Operands (e.g., "$t0", "$a1", "label") 
     std::vector<std::string> args;  
 };
 
@@ -32,7 +32,7 @@ struct Token {
  *
  * @param lines     - Assembly lines read from source file
  * @param symTable  - Symbol table to populate with label addresses
- * @return A vector of Token structs representing parsed instructions
+ * @return A vector of Token structs representing parsed instructions 
  */
 std::vector<Token> parse(const std::vector<std::string>& lines,
                          std::unordered_map<std::string, uint32_t>& symTable);
