@@ -11,7 +11,7 @@
   Date:        July 2025
 
   Dependencies:
-    - reader.h: for parsing instructions and building the symbol table
+    - parser.h: for parsing instructions and building the symbol table
     - encoder.h: for translating parsed instructions into machine code
     - helpers.h: for utility functions (register mapping, trimming, etc.)
     - <fstream>, <iostream>, <vector>, <string>, <unordered_map>
@@ -23,7 +23,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "reader.h"
+#include "parser.h"
 #include "encoder.h"
 #include "helpers.h"
 #include "tiny-mips-asm.h"
