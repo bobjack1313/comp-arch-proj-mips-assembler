@@ -13,8 +13,8 @@
   Dependencies:
     - parser.h: for parsing instructions and building the symbol table
     - encoder.h: for translating parsed instructions into machine code
-    - helpers.h: for utility functions (register mapping, trimming, etc.)
-    - <fstream>, <iostream>, <vector>, <string>, <unordered_map>
+    - converters.h: for converting functions
+    - <fstream>, <iostream>, <vector>, <string>, <unordered_map> 
   -----------------------------------------------------------------------------*/
 
 #include <iostream>
@@ -25,7 +25,7 @@
 
 #include "parser.h"
 #include "encoder.h" 
-#include "helpers.h"
+#include "converters.h"
 #include "tiny-mips-asm.h"  
 
 /**
