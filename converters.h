@@ -15,7 +15,10 @@
     - <cstdint>
   -----------------------------------------------------------------------------*/
 
-#pragma once
+#ifndef CONVERTERS_H
+#define CONVERTERS_H
+
+
 #include <string>
 #include <cstdint> 
 
@@ -35,3 +38,6 @@ int reg_number(const std::string& regName);
  * @return String of 0s and 1s representing the binary value
  */
 std::string to_binary32(uint32_t value);
+
+
+#endif // CONVERTERS_H

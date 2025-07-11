@@ -12,8 +12,10 @@
   Dependencies:
     - <string>, <vector>, <unordered_map>, <cstdint>
   -----------------------------------------------------------------------------*/
+#ifndef PARSER_H
+#define PARSER_H
 
-#pragma once
+
 #include <string>
 #include <vector>
 #include <unordered_map> 
@@ -37,3 +39,6 @@ struct Token {
  */
 std::vector<Token> parse(const std::vector<std::string>& lines,
                          std::unordered_map<std::string, uint32_t>& symTable);
+
+
+#endif // PARSER_H

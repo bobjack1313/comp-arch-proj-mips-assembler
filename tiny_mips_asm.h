@@ -12,6 +12,10 @@
   Dependencies:
     - <string>
   -----------------------------------------------------------------------------*/
-#pragma once
+#ifndef TINY_MIPS_ASM_H
+#define TINY_MIPS_ASM_H
 
 int runAssembler(const std::string& inputFilePath, const std::string& outputFilePath);
+
+
+#endif // TINY_MIPS_ASM_H

@@ -13,8 +13,10 @@
     - parser.h -- for tokens
     - <string>, <vector>, <unordered_map>, <cstdint>
   -----------------------------------------------------------------------------*/
+#ifndef ENCODER_H
+#define ENCODER_H
 
-#pragma once
+
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -61,3 +63,6 @@ uint32_t encode_I(uint32_t opcode, uint32_t rs, uint32_t rt, int16_t imm);
  * @return Encoded 32-bit integer representation
  */
 uint32_t encode_J(uint32_t opcode, uint32_t address);
+
+
+#endif // ENCODER_H
