@@ -24,7 +24,7 @@
                execute in a basic MIPS-compatible processor model.
 
   Dependencies:
-    - <string>, <cstdint>, <vector>, <string>, <array> 
+    - <cstdint>, <vector>, <array> 
   -----------------------------------------------------------------------------*/
 #ifndef TINY_MIPS_CPU_H
 #define TINY_MIPS_CPU_H
@@ -34,39 +34,39 @@
 #include <array>
 
 
-class TinyMipsCPU { 
+class TinyMipsCPU {
 public:
     TinyMipsCPU();
-  
     // Load binary instructions (as 32-bit unsigned integers) 
     void loadProgram(const std::vector<uint32_t>& instructions); 
-
     // Run the program until completion - jumps to invalid PC or runs out of code
     void executeProgram(); 
-
     // Execute one instruction and update PC
     bool performStep(); 
 
 private:
-    // Register range from 0-31
-    std::array<uint32_t, 32> registers; 
-    // Memory representation where insturctions are loaded
-    std::vector<uint32_t> instructionMemory;  
-    // Simplified flat memory
-    std::vector<uint8_t> memory;
     // Program counter           
     uint32_t pc;  
+    // Register range from 0-31
+    std::array<uint32_t, 32> registers; 
+    // Simplified flat memory
+    std::vector<uint8_t> memory;
+    // Memory representation where insturctions are loaded
+    std::vector<uint32_t> instructionMemory;
     
     // Instruction decoding helpers accesses
     uint32_t getOpcode(uint32_t instruction) const; 
+    uint32_t getRs(uint32_t instruction) const;
+    uint32_t getRt(uint32_t instruction) const; 
+    uint32_t getRd(uint32_t instruction) const;
+    uint32_t getFunct(uint32_t instruction) const; 
 
     // Instruction implementations
     void runStyleRType(uint32_t instruction); 
     void runStyleIType(uint32_t instruction);
     void runStyleJType(uint32_t instruction); 
-
-
-
 };
    
+extern bool DEBUG_MODE;
+
 #endif // TINY_MIPS_CPU_H 

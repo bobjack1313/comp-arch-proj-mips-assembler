@@ -21,6 +21,7 @@ using namespace std;
 
 
 int main(int argc, char* argv[]) {
+    DEBUG_MODE = true; 
 	// Check input file validity
     if (argc != 2) {
         cerr << "Usage: ./simulate_single_cpu <binary_file.txt>\n";
