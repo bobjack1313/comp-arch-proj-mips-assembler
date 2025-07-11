@@ -21,7 +21,14 @@ TinyMipsCPU::TinyMipsCPU() {
 
 
 // Need a function to load the instructions into the cpu class
+void TinyMipsCPU::loadProgram(const vector<uint32_t>& instructions) {
+    instructionMemory = instructions;
+    pc = 0;
+}
 
+void TinyMipsCPU::executeProgram() {
+    
+}
 
 // Need a function for execution loop (heartbeat)
 

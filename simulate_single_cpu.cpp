@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------------
-  File:        simulate_cpu.cpp
+  File:        simulate_single_cpu.cpp
   Project:     Tiny MIPS Assembler - CSCE 5610 Group Project (Bonus)
   Purpose:     Single CPU simulator driver that loads binary MIPS instructions
                and executes them using TinyMipsCPU.
@@ -9,9 +9,13 @@
   Instructor:  Dr. Beilei Jiang
   Date:        July 2025
 ------------------------------------------------------------------------------*/
+#include "simulate_single_cpu.h"
 #include "tiny_mips_cpu.h"
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <bitset>
+
 
 using namespace std;
 
@@ -29,19 +33,23 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Check file read
+    // Create vector for 32 bit instr
+    vector<uint32_t> instructions;
+    // String for each line read
     string line;
     while (getline(inputFile, line)) {
-        cout << line << endl;
+        if (line.length() == 32) {
+            uint32_t binary = bitset<32>(line).to_ulong();
+            instructions.push_back(binary);
+        }
     }
 
-	// Read file ilne by line
+    // Invoke the CPU class and load instruction vector with the bitsets
+    TinyMipsCPU cpu;
+    cpu.loadProgram(instructions);
+    cpu.executeProgram();
 
-
-	// Convert the strings to binary
-
-	// Load binary into simulated_single_cpu 
-
+    // Display the registers
 
     return 0;
 }
