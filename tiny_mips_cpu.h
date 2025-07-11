@@ -33,6 +33,8 @@
 #include <vector>  
 #include <array>
 #include <string>
+#include <unordered_set>
+
 
 
 class TinyMipsCPU {
@@ -46,8 +48,10 @@ public:
     bool performStep(); 
     // Print the current register state 
     void displayRegisters() const; 
+    void displayRegisters1(const std::unordered_set<int>& changedRegs) const;
     // Print a memory snapshot (debug)
     void displayMemory(uint32_t start, uint32_t end) const;
+
 
 private:
     // Program counter           
@@ -79,7 +83,8 @@ private:
     void storeWord(uint32_t address, uint32_t value);
 
     // Utility
-    std::string registerName(uint32_t reg) const; 
+    std::string registerName(uint32_t reg) const;
+    std::string getNamedRegister(uint32_t reg) const;
 };
    
 extern bool DEBUG_MODE;

@@ -13,6 +13,7 @@
 #include <iostream>
 #include <bitset>
 #include <iomanip>
+#include <unordered_map>
 
 using namespace std;
 
@@ -26,19 +27,29 @@ bool DEBUG_MODE = false;
 TinyMipsCPU::TinyMipsCPU() 
     : pc(0), registers{}, memory(1024, 0) { }
 
+// Use to catch infinite loops from bad test code
+int maxSteps = 0;
+int steps = 0;
+
 // Display func declaration
 void displayBits(uint32_t value, int bits);
 
 // Need a function to load the instructions into the cpu class
 void TinyMipsCPU::loadProgram(const vector<uint32_t>& instructions) {
     instructionMemory = instructions;
+    maxSteps = instructionMemory.size();
     pc = 0;
 }
 
 // Will cycle through each instruction step until completion
 void TinyMipsCPU::executeProgram() {
     // Heartbeat loop for each step
-    while(performStep());
+    while(performStep()) {
+        if (++steps > maxSteps) {
+            cerr << "[ERROR] Max instruction count exceeded. Possible infinite loop." << endl;
+            break;
+        }
+    }
 }
 
 // Works through the instruction | picks type | segments
@@ -60,19 +71,39 @@ bool TinyMipsCPU::performStep() {
         displayBits(opcode, 6);
     }
 
-    // Separate 0 for RType | 2, 3 for J Type | Remaining are IType
+    // Initial iteration output display
+    cout << "\n=== Executing Instruction ===\n";
+    cout << "Binary: " << bitset<32>(current_instruction) << "\n";
+    cout << "Opcode: " << opcode << "\n";
+
+    // Separate 0 for R-Type | 2, 3 for J-Type | Remaining are I-Type
     if (opcode == 0) {
+        cout << "R-Type" << " Instruction\n\n";
         runStyleRType(current_instruction); 
 
     } else if (opcode == 2 || opcode == 3) {
+        cout << "J-Type" << " Instruction\n\n";
         runStyleJType(current_instruction); 
 
     } else {
-        runStyleIType(current_instruction,  opcode);
+        cout << "I-Type" << " Instruction\n\n";
+        runStyleIType(current_instruction, opcode);
     }
+
+    // Show post-state summary
+    displayRegisters();
+    cout << endl;
+    displayMemory(0, 64); 
+
     // Increment pc + 4
     pc += 4;
     return true;
+}
+
+void TinyMipsCPU::displayRegisters1(const std::unordered_set<int>& changedRegs) const {
+    for (int i : changedRegs) {
+        cout << registerName(i) << ": 0x" << hex << setw(8) << setfill('0') << registers[i] << endl;
+    }
 }
 
 void TinyMipsCPU::displayRegisters() const {
@@ -86,11 +117,31 @@ void TinyMipsCPU::displayRegisters() const {
     }
 }
 
+// Displays memory that has contents
 void TinyMipsCPU::displayMemory(uint32_t start, uint32_t end) const {
+    cout << "\nMemory Contents (" << start << " to " << end << "):" << endl;
+
+    bool any = false;
     for (uint32_t addr = start; addr <= end; addr += 4) {
-        cout << "M[" << addr << "] = " << loadWord(addr) << '\n';
+        uint32_t val = loadWord(addr);
+        if (val != 0) {
+            cout << "M[" << setw(3) << addr << "] = " << hex << "0x" << val << dec << " (" << val << ")" << endl;
+            any = true;
+        }
     }
+
+    if (!any)
+        cout << "[No non-zero memory in this range]" << endl;
 }
+
+// Debugging Version - Shows zero values
+// void TinyMipsCPU::displayMemory(uint32_t start, uint32_t end) const {
+//     cout << "Memory Contents (" << start << " to " << end << "):\n";
+//     for (uint32_t addr = start; addr <= end; addr += 4) {
+//         uint32_t word = loadWord(addr);
+//         cout << "M[" << addr << "] = 0x" << hex << setw(8) << setfill('0') << word << dec << "\n";
+//     }
+// }
 
 /*
 | 31-26 | 25-21 | 20-16 | 15-11 | 10-6  | 5-0 |
@@ -104,7 +155,7 @@ void TinyMipsCPU::runStyleRType(uint32_t instruction) {
     uint32_t funct = getFunct(instruction);
 
     if (DEBUG_MODE) {
-        cout << "**> Starting RType instruction " << endl;
+        cout << "**> Starting R-Type instruction " << endl;
         displayBits(rs, 5);
         displayBits(rt, 5);
         displayBits(rd, 5);
@@ -115,27 +166,76 @@ void TinyMipsCPU::runStyleRType(uint32_t instruction) {
     switch (funct) {
         // Add - Function Code 32
         case 0x20: registers[rd] = registers[rs] + registers[rt];
+            cout << "Instruction: add " << getNamedRegister(rd)
+                << ", " << getNamedRegister(rs) << ", " << getNamedRegister(rt) << '\n';
+            cout << "  Values: " << registerName(rs) << " = " << registers[rs]
+                << ", " << registerName(rt) << " = " << registers[rt] << '\n';
+            cout << "  Result: " << registerName(rd) << " = "
+                << registers[rs] << " + " << registers[rt]
+                << " = " << registers[rd] << '\n';
             break;
+
         // Sub - Function Code 34    
         case 0x22: registers[rd] = registers[rs] - registers[rt];
+            cout << "Instruction: sub " << getNamedRegister(rd)
+                << ", " << getNamedRegister(rs) << ", " << getNamedRegister(rt) << '\n';
+            cout << "  Values: " << registerName(rs) << " = " << registers[rs]
+                << ", " << registerName(rt) << " = " << registers[rt] << '\n';
+            cout << "  Result: " << registerName(rd) << " = "
+                << registers[rs] << " - " << registers[rt]
+                << " = " << registers[rd] << '\n';
             break;
+
         // And - Function Code 36
         case 0x24: registers[rd] = registers[rs] & registers[rt];
+            cout << "Instruction: and " << getNamedRegister(rd) << ", " 
+                << getNamedRegister(rs) << ", " << getNamedRegister(rt) << endl;
+            cout << "  Values: " << getNamedRegister(rs) << " = " << registers[rs] << ", "
+                << getNamedRegister(rt) << " = " << registers[rt] << endl;
+            cout << "  Result: " << getNamedRegister(rd) << " = " 
+                << registers[rs] << " & " << registers[rt] << " = " << registers[rd] << endl;
             break;
+
         // Or - Function Code 37
-        case 0x25: registers[rd] = registers[rs] | registers[rt]; 
+        case 0x25: registers[rd] = registers[rs] | registers[rt];
+            cout << "Instruction: or " << getNamedRegister(rd) << ", " 
+                << getNamedRegister(rs) << ", " << getNamedRegister(rt) << endl;
+            cout << "  Values: " << getNamedRegister(rs) << " = " << registers[rs] << ", "
+                << getNamedRegister(rt) << " = " << registers[rt] << endl;  
+            cout << "  Result: " << getNamedRegister(rd) << " = " 
+                << registers[rs] << " | " << registers[rt] << " = " << registers[rd] << endl;
             break;
+
         // Nor - Function Code 39
         case 0x27: registers[rd] = ~(registers[rs] | registers[rt]);
+            cout << "Instruction: nor " << getNamedRegister(rd) << ", "
+                << getNamedRegister(rs) << ", " << getNamedRegister(rt) << endl;
+            cout << "  Values: " << getNamedRegister(rs) << " = " << registers[rs] << ", "
+                << getNamedRegister(rt) << " = " << registers[rt] << endl; 
+            cout << "  Result: " << getNamedRegister(rd) << " = ~("
+                << registers[rs] << " | " << registers[rt] << ") = " << registers[rd] << endl; 
             break; 
+
         // Slt - Function Code 42 
         case 0x2A: registers[rd] = (int32_t)registers[rs] < (int32_t)registers[rt];
+            cout << "Instruction: slt " << getNamedRegister(rd) << ", "
+                << getNamedRegister(rs) << ", " << getNamedRegister(rt) << endl;
+            cout << "  Values: " << getNamedRegister(rs) << " = " << static_cast<int32_t>(registers[rs]) << ", "
+                << getNamedRegister(rt) << " = " << static_cast<int32_t>(registers[rt]) << endl;
+            cout << "  Result: " << getNamedRegister(rd) << " = ("
+                << static_cast<int32_t>(registers[rs]) << " < " << static_cast<int32_t>(registers[rt]) << ") → "
+                << registers[rd] << endl;
             break;
 
         default:
             cerr << "Unknown R-type funct: " << funct << "\n";
             break;
     }
+
+    cout << "\nModified Registers\n";
+    cout << registerName(rs) << " = " << registers[rs] << endl;
+    cout << registerName(rt) << " = " << registers[rt] << endl;
+    cout << registerName(rd) << " = " << registers[rd] << endl << endl;
 }
 
 /*
@@ -148,7 +248,7 @@ void TinyMipsCPU::runStyleIType(uint32_t instruction, uint32_t opcode) {
     int16_t imm = getImmediate(instruction);
 
     if (DEBUG_MODE) {
-        cout << "**> Starting IType instruction " << endl;
+        cout << "**> Starting I-Type instruction " << endl;
         displayBits(rs, 5);
         displayBits(rt, 5);
         displayBits(imm, 16);
@@ -157,19 +257,64 @@ void TinyMipsCPU::runStyleIType(uint32_t instruction, uint32_t opcode) {
     switch (opcode) {
         // Beq - Function Code 4
         case 0x4:
+            cout << "Instruction: beq " << getNamedRegister(rs) << ", " << getNamedRegister(rt)
+                << ", offset = " << static_cast<int16_t>(imm) << endl;
+            cout << "  Values: " << getNamedRegister(rs) << " = " << registers[rs]
+                << ", " << getNamedRegister(rt) << " = " << registers[rt] << endl;
+
             if (registers[rs] == registers[rt]) {
-                pc += (imm << 2) + 4;
+                uint32_t targetPC = pc + 4 + (static_cast<int16_t>(imm) << 2);
+                cout << "  Branch Taken: PC set to " << targetPC << " (0x" << hex << targetPC << dec << ")" << endl;
+                pc = targetPC;
                 return;
+            } else {
+                cout << "  Branch Not Taken" << endl;
             }
             break;
+
+        // Addi - Function Code 8
+        case 0x8: { 
+            cout << "Instruction: addi " << getNamedRegister(rt) << ", "
+                << getNamedRegister(rs) << ", " << static_cast<int16_t>(imm) << endl;
+            cout << "  Values: " << getNamedRegister(rs) << " = " << registers[rs] << endl;
+
+            int32_t result = static_cast<int32_t>(registers[rs]) + static_cast<int16_t>(imm);
+            registers[rt] = result;
+            cout << "  Result: " << getNamedRegister(rt) << " = "
+                << static_cast<int32_t>(registers[rs]) << " + " << static_cast<int16_t>(imm)
+                << " = " << result << endl;
+            break;
+        }
+
         // Load Word - Function Code 35
-        case 0x23:
-            registers[rt] = loadWord(registers[rs] + imm);
+        case 0x23: {
+
+            uint32_t addr = registers[rs] + static_cast<int16_t>(imm);
+            uint32_t value = loadWord(addr);
+            registers[rt] = value;
+
+            cout << "Instruction: lw " << getNamedRegister(rt) << ", "
+                << static_cast<int16_t>(imm) << "(" << getNamedRegister(rs) << ")" << endl;
+            cout << "  Effective address: " << addr << endl;
+            cout << "  Loaded value: " << value << " -> " << getNamedRegister(rt) << endl;
             break;
+        }
+
         // Store Word - Function Code 43       
-        case 0x2B:
-            storeWord(registers[rs] + imm, registers[rt]);
+        case 0x2B: {
+            int32_t address = static_cast<int32_t>(registers[rs]) + static_cast<int16_t>(imm);
+            storeWord(address, registers[rt]);
+
+            cout << "Instruction: sw " << getNamedRegister(rt) << ", " << static_cast<int16_t>(imm)
+                << "(" << getNamedRegister(rs) << ")\n";
+            cout << "  Effective address: " << address << "\n";
+            cout << "  Stored " << getNamedRegister(rt) << " (value: " << registers[rt]
+                << ") into M[" << address << "]\n";
+
+            displayMemory(address, address + 4);
+            cout << endl;
             break;
+        }
 
         default:
             cerr << "Unknown I-type opcode: " << opcode << endl;
@@ -181,20 +326,26 @@ void TinyMipsCPU::runStyleIType(uint32_t instruction, uint32_t opcode) {
 | 31-26 | 25-0  |
 |opcode |  addr | 
 */
-void TinyMipsCPU::runStyleJType(uint32_t instruction) { 
-    uint32_t addr = getAddress(instruction);
-    uint32_t addrShift = (addr << 2);
-    uint32_t upperFour = pc & 0xF0000000;
+void TinyMipsCPU::runStyleJType(uint32_t instruction) {
+    uint32_t addr = getAddress(instruction);        
+    uint32_t addrShift = (addr << 2);              
+    uint32_t upperFour = pc & 0xF0000000;           
     uint32_t fullJumpAddress = upperFour | addrShift;
 
     if (DEBUG_MODE) {
-        cout << "**> Starting JType instruction " << endl;
-        cout << "- Jump Address Check - " << addr << endl;
-        cout << "upperFour: "<< upperFour << " " << "AddShft: " <<  addrShift << endl;
-        cout << "Full Address: " << fullJumpAddress;
+        cout << "**> Starting J-Type instruction\n";
+        cout << "Raw address: 0x" << hex << addr << "\n";
+        cout << "Shifted:     0x" << addrShift << "\n";
+        cout << "PC Upper:    0x" << upperFour << "\n";
+        cout << "Full Jump:   0x" << fullJumpAddress << "\n";
     }
+
+    cout << "Instruction: j 0x" << hex << fullJumpAddress << dec << endl;
+    cout << "  Jumping to address: " << fullJumpAddress << endl;
+
     pc = fullJumpAddress;
 }
+
 
 uint32_t TinyMipsCPU::loadWord(uint32_t addr) const {
     // Check Mem Bounds
@@ -237,6 +388,27 @@ string TinyMipsCPU::registerName(uint32_t reg) const {
     return "$" + to_string(reg);
 }
 
+// Will map the register value to the assembly name
+string TinyMipsCPU::getNamedRegister(uint32_t reg) const {
+    static const unordered_map<uint32_t, string> regMap = {
+        {0, "$zero"}, {1, "$at"},   {2, "$v0"},  {3, "$v1"},
+        {4, "$a0"},   {5, "$a1"},   {6, "$a2"},  {7, "$a3"},
+        {8, "$t0"},   {9, "$t1"},   {10, "$t2"}, {11, "$t3"}, 
+        {12, "$t4"},  {13, "$t5"},  {14, "$t6"}, {15, "$t7"},
+        {16, "$s0"},  {17, "$s1"},  {18, "$s2"}, {19, "$s3"},  
+        {20, "$s4"},  {21, "$s5"},  {22, "$s6"}, {23, "$s7"},
+        {24, "$t8"},  {25, "$t9"},  {26, "$k0"}, {27, "$k1"}, 
+        {28, "$gp"},  {29, "$sp"},  {30, "$fp"}, {31, "$ra"} 
+    };  
+
+    auto it = regMap.find(reg); 
+    if (it != regMap.end()) {
+        return it->second; 
+    } else {
+        // Fallback 
+        return "$r" + to_string(reg);  
+    }
+}
 
 // Helper function to extract the bits from instruction
 uint32_t extractBits(uint32_t value, int start, int length) {

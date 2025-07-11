@@ -20,7 +20,7 @@ using namespace std;
 
 
 int main(int argc, char* argv[]) {
-    DEBUG_MODE = true; 
+    DEBUG_MODE = false; 
 	// Check input file validity
     if (argc != 2) {
         cerr << "Usage: ./simulate_single_cpu <binary_file.txt>\n";
@@ -48,12 +48,18 @@ int main(int argc, char* argv[]) {
     cout << "Initial Register State:\n";
     cpu.displayRegisters();
 
+    cout << "\nInitial Memory State:\n";
+    cpu.displayMemory(0, 64);
+
     // Load instruction vector with the bitsets
     cpu.loadProgram(instructions);
     cpu.executeProgram();
 
     cout << "\nFinal Register State:\n";
     cpu.displayRegisters();
+
+    cout << "\nFinal Memory State:\n";
+    cpu.displayMemory(0, 64);  
 
     return 0;
 }
