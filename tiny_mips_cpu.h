@@ -24,7 +24,7 @@
                execute in a basic MIPS-compatible processor model.
 
   Dependencies:
-    - <cstdint>, <vector>, <array> 
+    - <cstdint>, <vector>, <array>, <string>
   -----------------------------------------------------------------------------*/
 #ifndef TINY_MIPS_CPU_H
 #define TINY_MIPS_CPU_H
@@ -32,6 +32,7 @@
 #include <cstdint>
 #include <vector>  
 #include <array>
+#include <string>
 
 
 class TinyMipsCPU {
@@ -43,6 +44,10 @@ public:
     void executeProgram(); 
     // Execute one instruction and update PC
     bool performStep(); 
+    // Print the current register state 
+    void displayRegisters() const; 
+    // Print a memory snapshot (debug)
+    void displayMemory(uint32_t start, uint32_t end) const;
 
 private:
     // Program counter           
@@ -62,6 +67,7 @@ private:
     uint32_t getFunct(uint32_t instruction) const;
     int16_t  getImmediate(uint32_t instruction) const;
     uint32_t getShamt(uint32_t instruction) const;
+    uint32_t getAddress(uint32_t instruction) const; 
 
     // Instruction implementations
     void runStyleRType(uint32_t instruction); 
@@ -71,6 +77,9 @@ private:
     // Memory helpers
     uint32_t loadWord(uint32_t address) const; 
     void storeWord(uint32_t address, uint32_t value);
+
+    // Utility
+    std::string registerName(uint32_t reg) const; 
 };
    
 extern bool DEBUG_MODE;

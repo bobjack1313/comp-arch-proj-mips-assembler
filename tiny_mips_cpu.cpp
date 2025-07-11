@@ -12,6 +12,7 @@
 #include "tiny_mips_cpu.h"
 #include <iostream>
 #include <bitset>
+#include <iomanip>
 
 using namespace std;
 
@@ -23,10 +24,8 @@ bool DEBUG_MODE = false;
  *  Init 1024 x 4 bytes = 4096 bytes = 4KB
 */
 TinyMipsCPU::TinyMipsCPU() 
-    : pc(0), registers{}, memory(1024, 0) {
-        // Debug
-        cerr << "TinyMipsCPU is active\n";
-}
+    : pc(0), registers{}, memory(1024, 0) { }
+
 // Display func declaration
 void displayBits(uint32_t value, int bits);
 
@@ -74,6 +73,23 @@ bool TinyMipsCPU::performStep() {
     // Increment pc + 4
     pc += 4;
     return true;
+}
+
+void TinyMipsCPU::displayRegisters() const {
+    for (int i = 0; i < 32; ++i) {
+        cout << "R" << setw(2) << setfill('0') << i << ": " << setw(10) << registers[i];
+
+        if (i % 4 == 3) 
+            cout << '\n';
+        else 
+            cout << '\t';
+    }
+}
+
+void TinyMipsCPU::displayMemory(uint32_t start, uint32_t end) const {
+    for (uint32_t addr = start; addr <= end; addr += 4) {
+        cout << "M[" << addr << "] = " << loadWord(addr) << '\n';
+    }
 }
 
 /*
@@ -161,11 +177,24 @@ void TinyMipsCPU::runStyleIType(uint32_t instruction, uint32_t opcode) {
     }
 }
 
-// Dummy implementations for now:
+/*
+| 31-26 | 25-0  |
+|opcode |  addr | 
+*/
 void TinyMipsCPU::runStyleJType(uint32_t instruction) { 
-    cout << "**> J-type stub\n";
-} 
+    uint32_t addr = getAddress(instruction);
+    uint32_t addrShift = (addr << 2);
+    uint32_t upperFour = pc & 0xF0000000;
+    uint32_t fullJumpAddress = upperFour | addrShift;
 
+    if (DEBUG_MODE) {
+        cout << "**> Starting JType instruction " << endl;
+        cout << "- Jump Address Check - " << addr << endl;
+        cout << "upperFour: "<< upperFour << " " << "AddShft: " <<  addrShift << endl;
+        cout << "Full Address: " << fullJumpAddress;
+    }
+    pc = fullJumpAddress;
+}
 
 uint32_t TinyMipsCPU::loadWord(uint32_t addr) const {
     // Check Mem Bounds
@@ -204,7 +233,9 @@ void TinyMipsCPU::storeWord(uint32_t addr, uint32_t val) {
 }
 
 // Function to display the register
-
+string TinyMipsCPU::registerName(uint32_t reg) const {
+    return "$" + to_string(reg);
+}
 
 
 // Helper function to extract the bits from instruction
@@ -241,6 +272,10 @@ int16_t TinyMipsCPU::getImmediate(uint32_t instruction) const {
 
 uint32_t TinyMipsCPU::getShamt(uint32_t instruction) const {
     return extractBits(instruction, 6, 5);
+}
+
+uint32_t TinyMipsCPU::getAddress(uint32_t instruction) const {
+    return extractBits(instruction, 0, 26);
 }
 
 // Debugging visual bit display

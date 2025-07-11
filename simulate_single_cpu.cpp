@@ -16,7 +16,6 @@
 #include <vector>
 #include <bitset>
 
-
 using namespace std;
 
 
@@ -44,13 +43,17 @@ int main(int argc, char* argv[]) {
             instructions.push_back(binary);
         }
     }
-
-    // Invoke the CPU class and load instruction vector with the bitsets
     TinyMipsCPU cpu;
+
+    cout << "Initial Register State:\n";
+    cpu.displayRegisters();
+
+    // Load instruction vector with the bitsets
     cpu.loadProgram(instructions);
     cpu.executeProgram();
 
-    // Display the registers
+    cout << "\nFinal Register State:\n";
+    cpu.displayRegisters();
 
     return 0;
 }
