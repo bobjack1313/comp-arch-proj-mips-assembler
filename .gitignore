@@ -15,6 +15,7 @@ Thumbs.db
 
 # === Project-Specific ===
 output.txt
+output_*.txt
 test*.txt
 *.bin
 *.log
