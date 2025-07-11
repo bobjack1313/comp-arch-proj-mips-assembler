@@ -10,11 +10,12 @@
 ------------------------------------------------------------------------------*/
 
 #include "tiny_mips_cpu.h"
+#include <iostream>
 
 using namespace std;
 
 
-TinyMipsCPU::TinyMipsCPU() : {
+TinyMipsCPU::TinyMipsCPU() {
   cerr << "TinyMipsCPU is active\n";
 }
 

@@ -7,12 +7,16 @@
 using namespace std;
 
 
-
-
-
 int main(int argc, char* argv[]) {
 
+    if (argc != 2) {
+        cerr << "Usage: ./simulate_single_cpu <binary_file.txt>\n";
+        return 1;
+    }
 
+    if (argv) { 
+
+    }
 	// Check input file validity
 
 
