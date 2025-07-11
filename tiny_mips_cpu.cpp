@@ -69,17 +69,22 @@ bool TinyMipsCPU::performStep() {
         runStyleJType(current_instruction); 
 
     } else {
-        runStyleIType(current_instruction);
+        runStyleIType(current_instruction,  opcode);
     }
     // Increment pc + 4
     pc += 4;
     return true;
 }
 
+/*
+| 31-26 | 25-21 | 20-16 | 15-11 | 10-6  | 5-0 |
+|opcode |  rs   |  rt   |  rd   | shamt |funct|
+*/
 void TinyMipsCPU::runStyleRType(uint32_t instruction) {
     uint32_t rs = getRs(instruction);
     uint32_t rt = getRt(instruction);
     uint32_t rd = getRd(instruction);
+    uint32_t shamt = getShamt(instruction);
     uint32_t funct = getFunct(instruction);
 
     if (DEBUG_MODE) {
@@ -87,6 +92,7 @@ void TinyMipsCPU::runStyleRType(uint32_t instruction) {
         displayBits(rs, 5);
         displayBits(rt, 5);
         displayBits(rd, 5);
+        displayBits(shamt, 5);
         displayBits(funct, 6);
     }
 
@@ -116,25 +122,92 @@ void TinyMipsCPU::runStyleRType(uint32_t instruction) {
     }
 }
 
-// Dummy implementations for now:
-void TinyMipsCPU::runStyleIType(uint32_t instruction) {
-    cout << "**> I-type stub\n";
-} 
+/*
+| 31-26 | 25-21 | 20-16 | 15-0 |
+|opcode |  rs   |  rt   |  imm | 
+*/
+void TinyMipsCPU::runStyleIType(uint32_t instruction, uint32_t opcode) {
+    uint32_t rs = getRs(instruction);
+    uint32_t rt = getRt(instruction);
+    int16_t imm = getImmediate(instruction);
 
+    if (DEBUG_MODE) {
+        cout << "**> Starting IType instruction " << endl;
+        displayBits(rs, 5);
+        displayBits(rt, 5);
+        displayBits(imm, 16);
+    }
+
+    switch (opcode) {
+        // Beq - Function Code 4
+        case 0x4:
+            if (registers[rs] == registers[rt]) {
+                pc += (imm << 2) + 4;
+                return;
+            }
+            break;
+        // Load Word - Function Code 35
+        case 0x23:
+            registers[rt] = loadWord(registers[rs] + imm);
+            break;
+        // Store Word - Function Code 43       
+        case 0x2B:
+            storeWord(registers[rs] + imm, registers[rt]);
+            break;
+
+        default:
+            cerr << "Unknown I-type opcode: " << opcode << endl;
+            break;
+    }
+}
+
+// Dummy implementations for now:
 void TinyMipsCPU::runStyleJType(uint32_t instruction) { 
     cout << "**> J-type stub\n";
 } 
+
+
+uint32_t TinyMipsCPU::loadWord(uint32_t addr) const {
+    // Check Mem Bounds
+    if (addr + 3 >= memory.size()) 
+        return 0;
+
+    uint32_t msb = memory[addr] << 24;
+    uint32_t nsb1 = memory[addr + 1] << 16;
+    uint32_t nsb2 = memory[addr + 2] << 8;
+    uint32_t lsb = memory[addr + 3];
+
+    if (DEBUG_MODE) {
+        cout << "- Load Word Bits - ";
+        cout << msb << " " << nsb1 <<  " " << nsb2 <<  " " << lsb << endl;
+    }
+    return msb | nsb1 | nsb2 | lsb;
+}
+
+void TinyMipsCPU::storeWord(uint32_t addr, uint32_t val) {
+    // Check Mem Bounds
+    if (addr + 3 >= memory.size()) 
+        return;
+
+    if (DEBUG_MODE) {
+        cout << "- Store Word Bits - ";
+        cout << ((val >> 24) & 0xFF) << " ";
+        cout << ((val >> 16) & 0xFF) <<  " ";
+        cout << ((val >> 8) & 0xFF) << " ";
+        cout << (val & 0xFF) << endl;
+    }
+
+    memory[addr] = (val >> 24) & 0xFF;
+    memory[addr + 1] = (val >> 16) & 0xFF;
+    memory[addr + 2] = (val >> 8) & 0xFF;
+    memory[addr + 3] = val & 0xFF; 
+}
 
 // Function to display the register
 
 
 
-
-/*
-Helper function to extract the bits from instruction
-| 31-26 | 25-21 | 20-16 | 15-11 | 10-6  | 5-0 |
-|opcode |  rs   |  rt   |  rd   | shamt |funct|
-*/
+// Helper function to extract the bits from instruction
 uint32_t extractBits(uint32_t value, int start, int length) {
     uint32_t bitShifted = value >> start;
     // Using mask flips all the bits and isolates what we need
@@ -160,6 +233,14 @@ uint32_t TinyMipsCPU::getRd(uint32_t instruction) const {
 
 uint32_t TinyMipsCPU::getFunct(uint32_t instruction) const {
     return extractBits(instruction, 0, 6);
+}
+// Immediates are signed values... watch the type
+int16_t TinyMipsCPU::getImmediate(uint32_t instruction) const {
+    return static_cast<int16_t>(extractBits(instruction, 0, 16));
+}
+
+uint32_t TinyMipsCPU::getShamt(uint32_t instruction) const {
+    return extractBits(instruction, 6, 5);
 }
 
 // Debugging visual bit display

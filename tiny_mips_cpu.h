@@ -59,12 +59,18 @@ private:
     uint32_t getRs(uint32_t instruction) const;
     uint32_t getRt(uint32_t instruction) const; 
     uint32_t getRd(uint32_t instruction) const;
-    uint32_t getFunct(uint32_t instruction) const; 
+    uint32_t getFunct(uint32_t instruction) const;
+    int16_t  getImmediate(uint32_t instruction) const;
+    uint32_t getShamt(uint32_t instruction) const;
 
     // Instruction implementations
     void runStyleRType(uint32_t instruction); 
-    void runStyleIType(uint32_t instruction);
+    void runStyleIType(uint32_t instruction, uint32_t opcode);
     void runStyleJType(uint32_t instruction); 
+
+    // Memory helpers
+    uint32_t loadWord(uint32_t address) const; 
+    void storeWord(uint32_t address, uint32_t value);
 };
    
 extern bool DEBUG_MODE;
