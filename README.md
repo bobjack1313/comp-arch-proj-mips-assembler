@@ -31,9 +31,6 @@ For the bonus segment of this project, there is a MIPS CPU simulator that loads 
 - Encodes supported instructions into correct 32-bit binary    
 - Outputs binary to a `.txt` file   
 
----
-
-
 ## Bonus Section Features
 
 - Implements a single-cycle MIPS CPU simulator in C++
@@ -92,8 +89,6 @@ Once compiled, run the assembler using:
 - `input.s`: MIPS assembly source file
 - `output.txt`: Destination file for 32-bit binary output
 
----
-
 ## Bonus Program Operation Instructions
 
 After the output file has been created. Load it into the single CPU simulator with:
@@ -101,5 +96,3 @@ After the output file has been created. Load it into the single CPU simulator wi
 ./simulate_single_cpu output.txt
 ```
 - `output.txt`: Text file containing binary representation of machine language to be simulated
-
----
