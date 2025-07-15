@@ -24,16 +24,16 @@ using namespace std;
 
 // R-type mapper of operations to their funct codes to get ops
 static unordered_map<string, uint32_t> functMap = {
-    {"sll",  0x00),
-    {"srl",  0x02),
-    {"jr",   0x08),
-    {"mult", 0x18),
-    {"div",  0x1A),
+    {"sll",  0x00},
+    {"srl",  0x02},
+    {"jr",   0x08},
+    {"mult", 0x18},
+    {"div",  0x1A},
     {"add",  0x20},
     {"sub",  0x22}, 
     {"and",  0x24},
     {"or",   0x25},
-    {"nor",  0x27),
+    {"nor",  0x27},
     {"slt",  0x2A}
 };
 
