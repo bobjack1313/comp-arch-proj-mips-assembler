@@ -14,7 +14,6 @@
     - converters.h
     - <sstream>, <unordered_map>, <cstdint>
   -----------------------------------------------------------------------------*/
-
 #include "encoder.h" 
 #include "converters.h"
 #include <sstream> 
@@ -25,20 +24,34 @@ using namespace std;
 
 // R-type mapper of operations to their funct codes to get ops
 static unordered_map<string, uint32_t> functMap = {
-    {"add", 0x20},
-    {"sub", 0x22}, 
-    {"and", 0x24},
-    {"or",  0x25}, 
-    {"slt", 0x2A}
+    {"sll",  0x00),
+    {"srl",  0x02),
+    {"jr",   0x08),
+    {"mult", 0x18),
+    {"div",  0x1A),
+    {"add",  0x20},
+    {"sub",  0x22}, 
+    {"and",  0x24},
+    {"or",   0x25},
+    {"nor",  0x27),
+    {"slt",  0x2A}
 };
 
-// Opcode mapper for instructions
+// Opcode mapper for instructions I-Type and J-Type
 static unordered_map<string, uint32_t> opcodeMap = {
-    {"lw",   0x23}, 
-    {"sw",   0x2B},
-    {"beq",  0x04}, 
+    {"j",    0x02},
+    {"jal",  0x03},
+    {"beq",  0x04},
+    {"bne",  0x05},
     {"addi", 0x08},
-    {"j",    0x02}
+    {"slti", 0x0A},
+    {"andi", 0x0C},
+    {"ori",  0x0D},
+    {"xori", 0x0E},
+    {"lb",   0x20},
+    {"lw",   0x23},
+    {"sb",   0x28},
+    {"sw",   0x2B}
 };
 
 // Encodes an R-type instruction: opcode | rs | rt | rd | shamt | funct
@@ -124,8 +137,9 @@ vector<string> assemble(const vector<Token>& tokens,
                 uint32_t addr = symbolTable.at(label) >> 2;
                 encoded = encode_J(opcode, addr);
             }
+        // Covers the ops that are out of scope in the project
         } else {
-            throw runtime_error("Unknown operation: " + op);
+            throw runtime_error("Operation: " + op + " not supported.\n");
         }
 
         // Convert encoded instruction to binary string and add to output
