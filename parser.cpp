@@ -13,7 +13,6 @@
     - parser.h
     - <sstream>, <algorithm>, <cstdint>
   -----------------------------------------------------------------------------*/
-
 #include "parser.h"
 #include <sstream>
 #include <algorithm>
@@ -21,9 +20,8 @@
 
 using namespace std;
 
-/**
- * Helper function to trim leading and trailing whitespace from a string.
- */
+
+// Helper function to trim leading and trailing whitespace from a string.
 static string trim(const string& s) {
     const char* whitespace = " \t\n\r";
     size_t start = s.find_first_not_of(whitespace);
@@ -32,9 +30,7 @@ static string trim(const string& s) {
     return s.substr(start, end - start + 1);
 }
 
-/**
- * Helper function to split a string by commas or whitespace into tokens.
- */
+// Helper function to split a string by commas or whitespace into tokens.
 static vector<string> splitArguments(const string& str) {
     vector<string> args;
     stringstream ss(str);
@@ -47,7 +43,6 @@ static vector<string> splitArguments(const string& str) {
             args.push_back(word);
         }
     }
-
     return args;
 }
 
@@ -69,10 +64,11 @@ vector<Token> parse(const vector<string>& lines,
         if (commentPos != string::npos) {
             line = line.substr(0, commentPos);
         }
-
         line = trim(line);
+      
         // Skip blank lines
-        if (line.empty()) continue;
+        if (line.empty())
+          continue;
 
         // Label check in loop
         size_t colonPos = line.find(':');
@@ -91,7 +87,8 @@ vector<Token> parse(const vector<string>& lines,
             }
         }
 
-        if (line.empty()) continue;
+        if (line.empty()) 
+          continue;
 
         // Extract operation - the first word
         stringstream ss(line);
@@ -101,7 +98,6 @@ vector<Token> parse(const vector<string>& lines,
         // Extract remaining string as arguments
         string argString;
         getline(ss, argString);
-
         vector<string> args = splitArguments(argString);
 
         // Add token to the list
@@ -109,6 +105,5 @@ vector<Token> parse(const vector<string>& lines,
         // Advance the instruction by 4 bytes
         pc += 4;  
     }
-
     return tokens;
 }
