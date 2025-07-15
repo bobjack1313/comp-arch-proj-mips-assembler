@@ -16,7 +16,6 @@
     - converters.h: for converting functions
     - <fstream>, <iostream>, <vector>, <string>, <unordered_map>, <cstdint>
   -----------------------------------------------------------------------------*/
-
 #include <iostream>
 #include <fstream>
 #include <vector> 
@@ -45,7 +44,6 @@ int runAssembler(const string& inputFilePath, const string& outputFilePath) {
         cerr << "Error: Cannot open input file: " << inputFilePath << endl;
         return 1; 
     }
-
     // Read the entire input file into a list of strings (line-by-line)
     vector<string> sourceLines; 
     string line; 
@@ -70,13 +68,11 @@ int runAssembler(const string& inputFilePath, const string& outputFilePath) {
         cerr << "Error: Cannot open output file: " << outputFilePath << endl;
         return 1;
     } 
-
     // Write each encoded binary instruction to the output file
     for (const auto& binary : binaryOutput) {
         outputFile << binary << '\n';
     } 
     outputFile.close();
-
     // Display confirmation message to user
     cout << "Assembled " << binaryOutput.size() << " instruction(s) to " << outputFilePath << endl;  
     return 0;
@@ -94,8 +90,6 @@ int main(int argc, char* argv[])  {
         cerr << "Usage: tiny_mips_asm <input_file.s> <output_file.txt>\n"; 
         return 1;
     } 
-
     // Exec assembler with input and output file paths
     return runAssembler(argv[1], argv[2]); 
 }
- 
