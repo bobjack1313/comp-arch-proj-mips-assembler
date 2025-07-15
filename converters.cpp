@@ -13,7 +13,6 @@
     - converters.h
     - <stdexcept>, <unordered_map>, <bitset> 
   -----------------------------------------------------------------------------*/
-
 #include "converters.h"
 #include <unordered_map> 
 #include <stdexcept>
@@ -57,4 +56,3 @@ int reg_number(const string& regName) {
 string to_binary32(uint32_t value) { 
     return bitset<32>(value).to_string();
 }
- 
