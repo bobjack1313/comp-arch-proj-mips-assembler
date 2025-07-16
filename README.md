@@ -91,11 +91,25 @@ Once compiled, run the assembler using:
 
 ### Sample Assembler Input File
 
-<pre><code>Loop: addi $t0, $zero, 5 # Initialize $t0 = 5 addi $t1, $zero, 3 # Initialize $t1 = 3 add $t2, $t0, $t1 # $t2 = $t0 + $t1 = 8 sw $t2, 0($zero) # Store $t2 into memory[0] lw $t3, 0($zero) # Load memory[0] into $t3 sub $t4, $t2, $t1 # $t4 = $t2 - $t1 = 5 </code></pre>
+<pre><code>
+Loop: addi $t0, $zero, 5 # Initialize $t0 = 5 
+addi $t1, $zero, 3 # Initialize $t1 = 3 
+add $t2, $t0, $t1 # $t2 = $t0 + $t1 = 8 
+sw $t2, 0($zero) # Store $t2 into memory[0] 
+lw $t3, 0($zero) # Load memory[0] into $t3 
+sub $t4, $t2, $t1 # $t4 = $t2 - $t1 = 5
+</code></pre>
 
 ### Sample Assembler Output Text
 
-<pre><code>00100000000010000000000000000101 00100000000010010000000000000011 00000001000010010101000000100000 10101100000010100000000000000000 10001100000010110000000000000000 00000001010010010110000000100010 </code></pre>
+<pre><code>
+00100000000010000000000000000101
+00100000000010010000000000000011
+00000001000010010101000000100000
+10101100000010100000000000000000 
+10001100000010110000000000000000 
+00000001010010010110000000100010 
+</code></pre>
 
 ## Bonus Program Operation Instructions
 
